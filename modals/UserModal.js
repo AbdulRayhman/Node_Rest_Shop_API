@@ -8,6 +8,6 @@ const UserSchema = mongoose.Schema({
         unique: true,
         match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
     },
-    password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/)
+    password: mongoose.Schema.Types.String
 });
 module.exports = mongoose.model('UserModal', UserSchema)

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require('mongoose');
 const ProductModal = require('../../modals/ProductModal');
-
+const checkAuth = require('../../middleware/checkAuth');
 router.get('/GetAllProducts', (req, res, next) => {
     ProductModal.find()
         .exec()
@@ -15,34 +15,38 @@ router.get('/GetAllProducts', (req, res, next) => {
         })
         .catch((err) => {
             console.log(err);
-
         });
-
-
 });
 
-router.post('/', (req, res, next) => {
-
+router.post('/', checkAuth, (req, res, next) => {
     const product = new ProductModal({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         price: req.body.price
     });
-    /**
-     * Here Save DATA in Database
-     */
     product
         .save()
-        .then((res) => {
-            console.log(res);
+        .then(result => {
+            console.log(result);
+            res.status(201).json({
+                message: "Created product successfully",
+                createdProduct: {
+                    name: result.name,
+                    price: result.price,
+                    _id: result._id,
+                    request: {
+                        type: "GET",
+                        url: "http://localhost:3000/products/" + result._id
+                    }
+                }
+            });
         })
-        .catch((err) => {
+        .catch(err => {
             console.log(err);
+            res.status(500).json({
+                error: err
+            });
         });
-    res.status(200).json({
-        message: "Handling POST request to the /products",
-        createProduct: product
-    });
 });
 
 router.get('/GetProductById/:productId', (req, res, next) => {
